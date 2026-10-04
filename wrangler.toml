@@ -1,0 +1,21 @@
+# Cloudflare Worker — waitlist signup API
+# Deploy: npm run worker:deploy (after D1 + secrets are set; see README)
+
+name = "process-ownership-waitlist-api"
+main = "worker/src/index.ts"
+compatibility_date = "2024-12-18"
+
+# Bind D1 database (create with: wrangler d1 create process-ownership-waitlist)
+# Then replace database_id with the ID from that command.
+[[d1_databases]]
+binding = "DB"
+database_name = "process-ownership-waitlist"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# Secrets (set via CLI, do not put real values here):
+#   wrangler secret put TURNSTILE_SECRET_KEY
+#
+# Vars (non-secret) — optional CORS allowlist; comma-separated origins.
+# Leave empty to allow any origin (fine for MVP; tighten for production).
+[vars]
+ALLOWED_ORIGINS = "http://localhost:4321,https://process-ownership.pages.dev"

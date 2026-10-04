@@ -1,0 +1,365 @@
+---
+const apiUrl = import.meta.env.PUBLIC_WAITLIST_API_URL ?? '';
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const hasApi = Boolean(apiUrl);
+const hasTurnstile = Boolean(turnstileSiteKey);
+---
+
+<section class="signup" id="waitlist" aria-labelledby="signup-heading">
+  <div class="signup-inner">
+    <p class="eyebrow">Pilot cohort waitlist</p>
+    <h2 id="signup-heading">Join the waitlist</h2>
+    <p class="lede">
+      Next step: if you are the person who owns the process, not just the report,
+      join the waitlist for the first pilot cohort.
+    </p>
+
+    <div id="form-panel">
+      <form id="waitlist-form" novalidate>
+        <label class="field" for="email">
+          <span class="label">Work email</span>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required
+            placeholder="you@plant.example"
+            maxlength="254"
+          />
+        </label>
+
+        {
+          hasTurnstile && (
+            <div
+              class="cf-turnstile"
+              data-sitekey={turnstileSiteKey}
+              data-theme="dark"
+              data-size="flexible"
+            />
+          )
+        }
+
+        {
+          !hasApi && (
+            <p class="hint">
+              Demo mode: no API URL configured. Submissions stay in this browser
+              (localStorage) until you set <code>PUBLIC_WAITLIST_API_URL</code>.
+            </p>
+          )
+        }
+
+        <p id="form-error" class="error" hidden role="alert"></p>
+
+        <button type="submit" id="submit-btn">
+          Join the waitlist
+        </button>
+      </form>
+    </div>
+
+    <div id="success-panel" class="success" hidden role="status">
+      <div class="success-icon" aria-hidden="true">✓</div>
+      <h3>You're on the list</h3>
+      <p id="success-message">
+        Thanks — we'll email you when the pilot cohort opens. No spam, just the
+        next step.
+      </p>
+    </div>
+  </div>
+</section>
+
+{hasTurnstile && (
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
+<script define:vars={{ apiUrl, hasApi, hasTurnstile }}>
+  const form = document.getElementById('waitlist-form');
+  const formPanel = document.getElementById('form-panel');
+  const successPanel = document.getElementById('success-panel');
+  const successMessage = document.getElementById('success-message');
+  const errorEl = document.getElementById('form-error');
+  const submitBtn = document.getElementById('submit-btn');
+  const STORAGE_KEY = 'po-waitlist-joined';
+
+  function showSuccess(message) {
+    if (message && successMessage) successMessage.textContent = message;
+    if (formPanel) formPanel.hidden = true;
+    if (successPanel) successPanel.hidden = false;
+    try {
+      localStorage.setItem(STORAGE_KEY, '1');
+    } catch (_) {}
+  }
+
+  function showError(msg) {
+    if (!errorEl) return;
+    errorEl.textContent = msg;
+    errorEl.hidden = !msg;
+  }
+
+  function getTurnstileToken() {
+    const input = document.querySelector(
+      'input[name="cf-turnstile-response"]'
+    );
+    return input && input.value ? input.value : '';
+  }
+
+  function resetTurnstile() {
+    if (typeof turnstile !== 'undefined' && turnstile.reset) {
+      try {
+        turnstile.reset();
+      } catch (_) {}
+    }
+  }
+
+  // Restore success state from prior visit
+  try {
+    if (localStorage.getItem(STORAGE_KEY) === '1') {
+      showSuccess(
+        "You're already on the waitlist. We'll reach out when the pilot opens."
+      );
+    }
+  } catch (_) {}
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showError('');
+
+      const emailInput = document.getElementById('email');
+      const email = (emailInput && emailInput.value ? emailInput.value : '')
+        .trim()
+        .toLowerCase();
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('Please enter a valid work email.');
+        return;
+      }
+
+      if (hasTurnstile) {
+        const token = getTurnstileToken();
+        if (!token) {
+          showError('Please complete the bot check.');
+          return;
+        }
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting…';
+      }
+
+      try {
+        if (!hasApi) {
+          // Frontend-only fallback for local demo / pre-Worker setup
+          const existing = JSON.parse(
+            localStorage.getItem('po-waitlist-emails') || '[]'
+          );
+          if (!existing.includes(email)) {
+            existing.push(email);
+            localStorage.setItem(
+              'po-waitlist-emails',
+              JSON.stringify(existing)
+            );
+          }
+          showSuccess(
+            "You're on the waitlist (saved locally). Connect the Worker API for production storage."
+          );
+          return;
+        }
+
+        const body = {
+          email,
+          source: 'landing',
+          turnstileToken: hasTurnstile ? getTurnstileToken() : 'dev-bypass',
+        };
+
+        const res = await fetch(`${apiUrl.replace(/\/$/, '')}/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (_) {}
+
+        if (!res.ok || !data.ok) {
+          showError(
+            (data && data.error) ||
+              'Something went wrong. Please try again in a moment.'
+          );
+          resetTurnstile();
+          return;
+        }
+
+        showSuccess(
+          data.message ||
+            "You're on the waitlist. We'll reach out when the pilot opens."
+        );
+      } catch (_) {
+        showError(
+          'Network error. Check your connection and try again.'
+        );
+        resetTurnstile();
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Join the waitlist';
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .signup {
+    padding: 0 1.25rem 4rem;
+  }
+
+  .signup-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 2rem 1.5rem 2.25rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .lede {
+    margin: 0 0 1.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  input[type='email'] {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease;
+  }
+
+  input[type='email']::placeholder {
+    color: #6a8578;
+  }
+
+  input[type='email']:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .cf-turnstile {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .hint {
+    margin: 0 0 1rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+  }
+
+  .hint code {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+
+  .error {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+    color: #f0a0a0;
+  }
+
+  button[type='submit'] {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    font: inherit;
+    font-weight: 600;
+    color: #0a1612;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  button[type='submit']:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+
+  button[type='submit']:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  button[type='submit']:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+
+  .success {
+    text-align: center;
+    padding: 1rem 0 0.25rem;
+  }
+
+  .success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 50%;
+  }
+
+  .success h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .success p {
+    margin: 0;
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,363 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WaitlistForm from '../components/WaitlistForm.astro';
+
+const year = new Date().getFullYear();
+
+const title =
+  'Process Ownership Training for Production Supervisors and Quality Engineers';
+const description =
+  'Process owner training for manufacturing. You own cost, yield, scrap, and on-time delivery, but no one coached you how to manage and improve the process.';
+
+const benefits = [
+  {
+    title: 'Process mapping that sticks',
+    body: 'Build current-state maps your floor team will actually use — boundaries, handoffs, and decision points clear enough to drive daily management.',
+  },
+  {
+    title: 'Pain points before solutions',
+    body: 'Separate symptoms from root causes. Learn a structured way to surface constraints, scrap, wait time, and rework without jumping to tools first.',
+  },
+  {
+    title: 'Flow and pull in real operations',
+    body: 'Apply flow/pull thinking on the line you run: takt vs. cycle time, WIP limits, and where push still hides in “standard” schedules.',
+  },
+  {
+    title: 'Kanban you can sustain',
+    body: 'Design kanban signals and replenishment rules that supervisors own — not a wallpaper board that dies after the audit.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <header class="site-header">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">PO</span>
+      <span class="brand-text">
+        <strong>Process Ownership</strong>
+        <span class="byline">Doug Bruce · Lean Six Sigma MBB</span>
+      </span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>You run the area. Nobody taught you how to run the process.</h1>
+      <h2 class="subhead">
+        Process ownership training for production supervisors and quality engineers.
+      </h2>
+      <p class="kicker">The problem</p>
+      <p class="problem">
+        You are on the hook for cost, yield, scrap, and on-time delivery. You are
+        responsible for the metrics, but no one ever coached you how to
+        systematically manage and improve the process.
+      </p>
+    </section>
+
+    <section class="agitate" aria-labelledby="agitate-heading">
+      <div class="agitate-inner">
+        <p class="kicker" id="agitate-heading">What it costs this week</p>
+        <p>
+          The numbers move and nobody can say which lever moved them. Scrap shows
+          up after a change the work instruction never caught. Yield slips in a
+          handoff nobody owns. On-time delivery fails because WIP and push are
+          still hiding in the schedule. The person who actually knows the process
+          is the only control plan, and when they leave, the metrics get worse
+          with no system underneath them. A registrar can wait. The cost of this
+          week cannot.
+        </p>
+      </div>
+    </section>
+
+    <section class="solution" aria-labelledby="solution-heading">
+      <div class="solution-inner">
+        <p class="kicker" id="solution-heading">The method</p>
+        <p class="solution-lead">
+          This is a practical process-ownership course for production supervisors
+          and quality engineers. You map the work so it sticks, name the pain
+          before you reach for a tool, run flow and pull on the line you actually
+          own, and build a kanban that is still in use next month — so cost,
+          yield, scrap, and delivery have an owner and a method, not just a
+          dashboard.
+        </p>
+      </div>
+    </section>
+
+
+    <section class="contrast" aria-labelledby="contrast-heading">
+      <div class="contrast-inner">
+        <p class="kicker" id="contrast-heading">Not another Green Belt</p>
+        <p>
+          Green Belt is wide on purpose. This is narrow on purpose. Map the work,
+          name the pain, see what is happening, and apply it this week to move
+          cost, yield, scrap, and delivery. Not everything under the sun. Just
+          the focused skills that move the needle.
+        </p>
+      </div>
+    </section>
+
+    <section class="benefits" aria-labelledby="benefits-heading">
+      <div class="benefits-inner">
+        <h2 id="benefits-heading">What you'll practice</h2>
+        <ul>
+          {
+            benefits.map((b) => (
+              <li>
+                <h3>{b.title}</h3>
+                <p>{b.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="about">
+      <div class="about-inner">
+        <h2>Built by a practitioner</h2>
+        <p>
+          Doug Bruce is a Lean Six Sigma Master Black Belt moving from hourly
+          consulting to scalable courseware. The focus is shop-floor fluency —
+          process mapping, problem framing, flow/pull, and kanban — aimed at
+          supervisors and quality engineers who need workable systems, not
+          another binder of tools.
+        </p>
+        <p class="compliance">
+          IATF and ISO already expect a named process owner. This course is the
+          coaching most plants never gave that person.
+        </p>
+      </div>
+    </section>
+
+    <WaitlistForm />
+  </main>
+
+  <footer class="site-footer">
+    <p>© {year} Doug Bruce / Process Ownership</p>
+  </footer>
+</BaseLayout>
+
+<style>
+  .site-header {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .brand-text strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .byline {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .hero {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 3rem 1.25rem 1.5rem;
+  }
+
+  .kicker {
+    margin: 0 0 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    max-width: 18em;
+    font-size: clamp(2rem, 5vw, 2.85rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .subhead {
+    margin: 0 0 1.75rem;
+    max-width: 36rem;
+    font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    color: var(--text);
+  }
+
+  .problem {
+    margin: 0;
+    max-width: 40rem;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+  }
+
+  .agitate {
+    padding: 0 1.25rem 2.5rem;
+  }
+
+  .agitate-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 1.25rem 1.35rem 1.35rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: var(--radius);
+  }
+
+  .agitate p:last-child {
+    margin: 0;
+    color: var(--text);
+  }
+
+  .solution {
+    padding: 0 1.25rem 2rem;
+  }
+
+  .solution-inner {
+    max-width: var(--wide);
+    margin: 0 auto;
+  }
+
+  .solution-lead {
+    margin: 0;
+    max-width: 42rem;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+  }
+
+
+  .contrast {
+    padding: 0 1.25rem 2.5rem;
+  }
+
+  .contrast-inner {
+    max-width: var(--wide);
+    margin: 0 auto;
+  }
+
+  .contrast-inner p:last-child {
+    margin: 0;
+    max-width: 42rem;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+  }
+
+  .benefits {
+    padding: 0 1.25rem 3rem;
+  }
+
+  .benefits-inner {
+    max-width: var(--wide);
+    margin: 0 auto;
+  }
+
+  .benefits h2,
+  .about h2 {
+    margin: 0 0 1.25rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .benefits ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 640px) {
+    .benefits ul {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .benefits li {
+    padding: 1.15rem 1.2rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .benefits h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .benefits p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+  }
+
+  .about {
+    padding: 0 1.25rem 3rem;
+  }
+
+  .about-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+  }
+
+  .about p {
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  .compliance {
+    margin-top: 1.25rem !important;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9375rem;
+  }
+
+  .site-footer {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .site-footer p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+</style>
