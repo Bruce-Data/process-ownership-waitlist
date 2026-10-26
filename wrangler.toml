@@ -4,13 +4,14 @@
 name = "process-ownership-waitlist-api"
 main = "worker/src/index.ts"
 compatibility_date = "2024-12-18"
+account_id = "ca55a04ddc470f52453d0be6ff65e167"
 
 # Bind D1 database (create with: wrangler d1 create process-ownership-waitlist)
 # Then replace database_id with the ID from that command.
 [[d1_databases]]
 binding = "DB"
 database_name = "process-ownership-waitlist"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "f72913c8-d956-4a38-8d02-851457cbfdc2"
 
 # Secrets (set via CLI, do not put real values here):
 #   wrangler secret put TURNSTILE_SECRET_KEY
