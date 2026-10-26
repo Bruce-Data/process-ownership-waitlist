@@ -19,4 +19,4 @@ database_id = "f72913c8-d956-4a38-8d02-851457cbfdc2"
 # Vars (non-secret) — optional CORS allowlist; comma-separated origins.
 # Leave empty to allow any origin (fine for MVP; tighten for production).
 [vars]
-ALLOWED_ORIGINS = "http://localhost:4321,https://process-ownership.pages.dev"
+ALLOWED_ORIGINS = "https://process-ownership-waitlist.pages.dev,http://localhost:4321,https://process-ownership.pages.dev"

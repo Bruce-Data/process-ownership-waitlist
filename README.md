@@ -58,8 +58,8 @@ Point `.env` at the local Worker URL wrangler prints.
 
 | Variable | Purpose |
 | --- | --- |
-| `PUBLIC_WAITLIST_API_URL` | Worker base URL, e.g. `https://process-ownership-waitlist-api.<account>.workers.dev` |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile **site** key (public) |
+| `PUBLIC_WAITLIST_API_URL` | Worker base URL: `https://process-ownership-waitlist-api.bruce-data.workers.dev` |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile **site** key (public): `0x4AAAAAAFm2g59R0uIiSOKG` |
 
 Set these in Cloudflare Pages → Settings → Environment variables (Production), then rebuild.
 
@@ -72,6 +72,17 @@ Set these in Cloudflare Pages → Settings → Environment variables (Production
 | `ALLOWED_ORIGINS` | Comma-separated origins in `wrangler.toml` `[vars]` (tighten after you know the Pages URL) |
 
 ## Deploy: D1 + Worker + Pages
+
+### Current production resources
+
+| Resource | Value |
+| --- | --- |
+| D1 database | `process-ownership-waitlist` (`f72913c8-d956-4a38-8d02-851457cbfdc2`), migration `0001_init.sql` applied |
+| Turnstile widget | `process-ownership-waitlist` (managed), site key `0x4AAAAAAFm2g59R0uIiSOKG`, domains `process-ownership-waitlist.pages.dev`, `localhost` |
+| Worker | `process-ownership-waitlist-api` at `https://process-ownership-waitlist-api.bruce-data.workers.dev` (secret `TURNSTILE_SECRET_KEY` set) |
+| Pages project | `process-ownership-waitlist` (to be created) → `https://process-ownership-waitlist.pages.dev` |
+
+The steps below document how these were set up and how to redo them.
 
 ### 1. Create D1 and apply migration
 
